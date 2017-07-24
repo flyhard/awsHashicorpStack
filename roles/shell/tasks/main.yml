@@ -1,0 +1,8 @@
+---
+- name: update the .bash_aliases
+  copy:
+    src: bash_aliases
+    dest: "{{ansible_user_dir}}/.bash_aliases"
+    owner: "{{ansible_user_id}}"
+    group: "{{ansible_user_id}}"
+    mode: 0644

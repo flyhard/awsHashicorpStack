@@ -1,0 +1,72 @@
+###############################################################################
+################################# INSTALL #####################################
+###############################################################################
+- name: Read package checksum file
+  stat:
+    path: "consul_{{ consul_version }}_SHA256SUMS"
+  become: yes
+  register: consul_checksum
+  tags:
+    - installation
+    - consul
+
+- name: Download package checksum file
+  get_url:
+    url: "{{ consul_checksum_file_url }}"
+    dest: "{{consul_temp_dir}}/consul_{{ consul_version }}_SHA256SUMS"
+  become: yes
+  tags:
+    - installation
+    - consul
+  when: not consul_checksum.stat.exists | bool
+
+- name: Read package checksum
+  shell: grep "{{ consul_pkg }}" "{{consul_temp_dir}}/consul_{{ consul_version }}_SHA256SUMS" | awk '{print $1}'
+  become: yes
+  register: consul_sha256
+  tags:
+    - installation
+    - consul
+
+- name: Check Consul package file
+  stat:
+    path: "{{consul_temp_dir}}/{{ consul_pkg }}"
+  become: yes
+  register: consul_package
+  tags:
+    - installation
+    - consul
+
+- name: Download Consul package
+  get_url:
+    url: "{{ consul_zip_url }}"
+    dest: "{{consul_temp_dir}}/{{ consul_pkg }}"
+    checksum: "sha256:{{ consul_sha256.stdout }}"
+    timeout: "42"
+  become: yes
+  tags:
+    - installation
+    - consul
+  when: not consul_package.stat.exists | bool
+
+- name: Install Consul
+  unarchive:
+    src: "{{consul_temp_dir}}/{{ consul_pkg }}"
+    dest: "{{ consul_install_path }}"
+    owner: "{{ consul_owner }}"
+    group: "{{ consul_group }}"
+    copy: no
+  become: yes
+  tags:
+    - installation
+    - consul
+
+- name: Cleanup
+  file:
+    path: "{{ item }}"
+    state: "absent"
+  become: yes
+  with_fileglob: "{{consul_temp_dir}}/{{ consul_pkg }}"
+  tags:
+    - installation
+    - consul

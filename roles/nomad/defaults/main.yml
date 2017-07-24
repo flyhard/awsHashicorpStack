@@ -1,0 +1,24 @@
+---
+nomad_version: "{{ lookup('env','NOMAD_VERSION') | default('0.5.6', true) }}"
+nomad_architecture_map:
+  # this first entry seems... redundant
+  #(but it's required for reasons)
+  amd64: amd64
+  x86_64: amd64
+  armv7l: arm
+  aarch64: arm64
+nomad_architecture: "{{ nomad_architecture_map[ansible_architecture] }}"
+nomad_os: "{{ ansible_system|lower }}"
+nomad_pkg: "nomad_{{ nomad_version }}_{{ nomad_os }}_{{ nomad_architecture }}.zip"
+nomad_zip_url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_{{ nomad_os }}_{{ nomad_architecture }}.zip"
+nomad_checksum_file_url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version}}_SHA256SUMS"
+nomad_install_path: /usr/local/bin
+nomad_owner: root
+nomad_group: root
+nomad_dc: dc1
+nomad_is_server: no
+nomad_leader_group: baron
+nomad_bootstrap_expect: "{{ groups[nomad_leader_group] | length }}"
+nomad_retry_join: ' [{% for host in groups[nomad_leader_group] %}"{{ host }}"{% if not loop.last %}, {% endif %}{% endfor %}]'
+
+nomad_enable_syslog: yes

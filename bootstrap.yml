@@ -1,0 +1,31 @@
+#!/usr/bin/env ansible-playbook -i inventory.ini --ask-pass
+---
+- name: bootstrap the pi clusters
+  gather_facts: true
+  remote_user: pi
+  become: yes
+  hosts:
+    - bramble
+  roles:
+    - ssh-key
+    - shell
+
+  tasks:
+    - name: update system
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 86400
+    - name: stop and disable services
+      service:
+        name: "{{item}}"
+        enabled: false
+        state: stopped
+      with_items:
+        - avahi-daemon
+        - avahi-daemon.socket
+        - bluetooth
+    - name: set hostname
+      hostname:
+        name: "{{hostvars.hostname}}"
+    

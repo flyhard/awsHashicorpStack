@@ -1,0 +1,102 @@
+---
+###############################################################################
+################################# INSTALL #####################################
+###############################################################################
+- name: Read package checksum file
+  local_action: stat path="{{ role_path }}/files/nomad_{{ nomad_version }}_SHA256SUMS"
+  become: no
+  run_once: true
+  register: nomad_checksum
+  tags:
+    - installation
+    - nomad
+
+- name: Download package checksum file
+  local_action: get_url url="{{ nomad_checksum_file_url }}" dest="{{ role_path }}/files/nomad_{{ nomad_version }}_SHA256SUMS"
+  become: no
+  run_once: true
+  tags:
+    - installation
+    - nomad
+  when: not nomad_checksum.stat.exists | bool
+
+- name: Read package checksum
+  local_action: shell grep "{{ nomad_pkg }}" "{{ role_path }}/files/nomad_{{ nomad_version }}_SHA256SUMS" | awk '{print $1}'
+  become: no
+  run_once: true
+  register: nomad_sha256
+  tags:
+    - installation
+    - nomad
+
+- name: Check Nomad package file
+  local_action: stat path="{{ role_path }}/files/{{ nomad_pkg }}"
+  become: no
+  run_once: true
+  register: nomad_package
+  tags:
+    - installation
+    - nomad
+
+- name: Download Nomad package
+  local_action: get_url url="{{ nomad_zip_url }}" dest="{{ role_path }}/files/{{ nomad_pkg }}" checksum="sha256:{{ nomad_sha256.stdout }}" timeout="42"
+  become: no
+  run_once: true
+  tags:
+    - installation
+    - nomad
+  when: not nomad_package.stat.exists | bool
+
+- name: Unarchive Nomad package
+  unarchive:
+    src: "{{ nomad_pkg }}"
+    dest: "{{ nomad_install_path }}"
+    owner: "{{ nomad_owner }}"
+    group: "{{ nomad_group }}"
+  become: yes
+  tags:
+    - installation
+    - nomad
+
+#######################################################
+#############  CONFIG   ###############################
+#######################################################
+- block:
+  - name: setup nomad server config
+    template:
+      src: server.conf.j2
+      dest: /etc/nomad/nomad.hcl
+    when: nomad_is_server
+    tags:
+      - nomad
+
+  - name: setup nomad client config
+    template:
+      src: client.conf.j2
+      dest: /etc/nomad/nomad.hcl
+    when: not nomad_is_server
+    tags:
+      - nomad
+
+  - name: install nomad systemd unit
+    copy:
+      src: nomad.service
+      dest: "{{ systemd_dir }}/nomad.service"
+    tags:
+      - nomad
+  - name: reload systemd
+    systemd:
+      daemon_reload: yes
+      name: nomad.service
+      state: restarted
+    tags:
+      - nomad
+  - name: enable nomad
+    service:
+      name: nomad
+      enabled: yes
+      state: started
+    tags:
+      - nomad
+  become: true
+  become_user: root

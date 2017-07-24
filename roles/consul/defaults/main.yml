@@ -1,0 +1,46 @@
+---
+consul_version: "{{ lookup('env','CONSUL_VERSION') | default('0.9.0', true) }}"
+consul_architecture_map:
+  # this first entry seems... redundant
+  #(but it's required for reasons)
+  amd64: amd64
+  x86_64: amd64
+  armv7l: arm
+  aarch64: arm64
+consul_architecture: "{{ consul_architecture_map[ansible_architecture] }}"
+consul_os: "{{ ansible_system|lower }}"
+consul_pkg: "consul_{{ consul_version }}_{{ consul_os }}_{{ consul_architecture }}.zip"
+consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_{{ consul_os }}_{{ consul_architecture }}.zip"
+consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version}}_SHA256SUMS"
+consul_install_path: /usr/local/bin
+consul_owner: root
+consul_group: root
+consul_dc: dc1
+consul_dns_domain: bramble.local
+consul_bind: "{{ ansible_default_ipv4.address }}"
+consul_client: "{{ ansible_default_ipv4.address }}"
+consul_advertise: "{{ ansible_default_ipv4.address }}"
+consul_is_server: no
+consul_retry_join: "{% for host in groups['consul'] %}\"{{ host }}\"{% if not loop.last %}, {% endif %}{% endfor %}"
+consul_bootstrap_expect: 3
+consul_disable_remote_exec: "false"
+
+consul_do_acl: no
+consul_acl_master_token: "42baab74-b9e1-11e6-8370-c7a88ede55d0"
+consul_acl_agent_token: "77829414-d3e5-32a9-a48b-2b922ac5619d"
+consul_acl_cluster: "{{ cluster }}"
+consul_acl_default_policy: "allow"
+consul_acl_down_policy: "allow"
+
+consul_do_ssl: no
+consul_ca_file: ca.cert
+consul_cert_file: consul.cert
+consul_key_file: consul.key
+
+consul_do_auth: no
+
+consul_ui_enabled: no
+
+consul_arch: arm
+
+consul_temp_dir: /tmp

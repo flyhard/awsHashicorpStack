@@ -1,0 +1,15 @@
+---
+#- name: stop vault
+#  become: yes
+#  become_user: root
+#  service:
+#    name: vault
+#    state: stopped
+#
+- name: reload consul
+  become: yes
+  become_user: root
+  service:
+    name: consul
+    enabled: yes
+    state: reloaded

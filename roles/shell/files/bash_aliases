@@ -1,0 +1,4 @@
+# add convenience aliases here
+
+alias ll="ls -lahG --color=auto"
+alias la="ls -a --color=auto"

@@ -1,0 +1,107 @@
+###############################################################################
+################################ CONFIGURE ####################################
+###############################################################################
+
+- block:
+  # - name: deploy tls files
+  #   copy:
+  #     src: "{{ item.src }}"
+  #     dest: "{{ item.dest }}"
+  #   with_items:
+  #     - src: etc/consul/ssl/cacert.pem
+  #       dest: /etc/consul/ssl/{{ consul_ca_file }}
+  #     - src: etc/consul/ssl/certs/consul.cert.pem
+  #       dest: /etc/consul/ssl/{{ consul_cert_file }}
+  #     - src: etc/consul/ssl/private/consul.key.pem
+  #       dest: /etc/consul/ssl/{{ consul_key_file }}
+  #   when: consul_do_ssl
+  #   notify:
+  #     - restart consul
+  #   tags:
+  #     - consul
+
+  - name: install consul scripts
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      mode: 0755
+    with_items:
+      - src: consul-wait-for-leader.sh
+        dest: /usr/local/bin
+      - src: consul-destroy-install.sh
+        dest: /usr/local/bin
+    tags:
+      - consul
+
+  - name: configure for systemd
+    copy:
+      src: consul.service
+      dest: "{{ systemd_dir }}/consul.service"
+      mode: 644
+    tags:
+      - consul
+  - name: reload systemd
+    systemd:
+      daemon_reload: yes
+      name: consul.service
+      state: restarted
+    tags:
+      - consul
+
+  - name: Create config folder
+    file:
+      path: /etc/consul
+      state: directory
+      mode: 0755
+    tags:
+    - consul
+
+  - name: configure consul
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      mode: u=rw,g=r,o=r
+    with_items:
+      - src: consul.json.j2
+        dest: /etc/consul/consul.json
+    notify:
+      - restart consul
+    tags:
+      - consul
+
+  - name: Generate server config
+    template:
+      src: server.json.j2
+      dest: /etc/consul/server.json
+      mode: u=rw,g=r,o=r
+    when: consul_is_server
+    notify:
+      - restart consul
+    tags:
+      - consul
+
+  - name: enable consul
+    service:
+      name: consul
+      enabled: yes
+      state: started
+    tags:
+      - consul
+
+  become: yes
+  become_user: root
+
+# - pause:
+#     seconds: 3
+#
+# - name: join cluster of consul-dcs
+#   command: "/usr/local/bin/consul join {{ groups['consul'] | random }}"
+#   run_once: yes
+#   tags:
+#     - consul
+#
+# - name: wait for leader
+#   command: /usr/local/bin/consul-wait-for-leader.sh
+#   register: leader_status
+#   tags:
+#     - consul
