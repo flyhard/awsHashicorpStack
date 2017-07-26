@@ -17,24 +17,28 @@ data "aws_ami" "consul" {
     values = ["hvm"]
   }
 
-  owners = ["self"]
+  owners      = [
+    "self"
+  ]
 }
 
 resource "aws_instance" "consul-server" {
-  ami           = "${data.aws_ami.consul.id}"
-  instance_type = "t2.nano"
+  ami                  = "${data.aws_ami.consul.id}"
+  instance_type        = "t2.nano"
   iam_instance_profile = "${aws_iam_instance_profile.consul-join.name}"
+  count                = 3
   tags {
-    Name = "consul-server"
+    Name   = "consul-server"
+    consul = "server"
   }
 }
 
 # Create the policy
 data "aws_iam_policy_document" "consul-join-policy" {
   statement {
-    sid=1
+    sid       = 1
 
-    actions = [
+    actions   = [
       "ec2:DescribeInstances",
     ]
 
@@ -54,14 +58,12 @@ resource "aws_iam_policy" "consul-join" {
 # Create the policy
 data "aws_iam_policy_document" "consul-join-role" {
   statement {
-    sid=1
+    sid     = 1
 
-    actions = [
-      "sts:AssumeRole",
-    ]
+    actions = ["sts:AssumeRole"]
 
     principals {
-      type= "Service"
+      type        = "Service"
       identifiers = ["ec2.amazonaws.com"]
     }
   }
@@ -75,12 +77,13 @@ resource "aws_iam_role" "consul-join" {
 # Attach the policy
 resource "aws_iam_policy_attachment" "consul-join" {
   name       = "${var.namespace}-consul-join"
-  roles       = ["${aws_iam_role.consul-join.name}"]
+  roles      = [
+    "${aws_iam_role.consul-join.name}"]
   policy_arn = "${aws_iam_policy.consul-join.arn}"
 }
 
 # Create the instance profile
 resource "aws_iam_instance_profile" "consul-join" {
-  name  = "${var.namespace}-consul-join"
-  role  = "${aws_iam_role.consul-join.name}"
+  name = "${var.namespace}-consul-join"
+  role = "${aws_iam_role.consul-join.name}"
 }

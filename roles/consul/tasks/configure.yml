@@ -60,12 +60,10 @@
     template:
       src: "{{ item.src }}"
       dest: "{{ item.dest }}"
-      mode: u=rw,g=r,o=r
+      mode: 0644
     with_items:
       - src: consul.json.j2
         dest: /etc/consul/consul.json
-    notify:
-      - restart consul
     tags:
       - consul
 
@@ -73,10 +71,17 @@
     template:
       src: server.json.j2
       dest: /etc/consul/server.json
-      mode: u=rw,g=r,o=r
+      mode: 0644
     when: consul_is_server
-    notify:
-      - restart consul
+    tags:
+      - consul
+
+  - name: Generate aws config
+    template:
+      src: aws.json.j2
+      dest: /etc/consul/aws.json
+      mode: 0644
+    when: consul_use_aws
     tags:
       - consul
 
@@ -84,7 +89,7 @@
     service:
       name: consul
       enabled: yes
-      state: started
+      state: stopped
     tags:
       - consul
 

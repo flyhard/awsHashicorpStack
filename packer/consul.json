@@ -3,37 +3,42 @@
     "aws_access_key": "",
     "aws_secret_key": ""
   },
-  "builders": [{
-    "type": "amazon-ebs",
-    "access_key": "{{user `aws_access_key`}}",
-    "secret_key": "{{user `aws_secret_key`}}",
-    "region": "eu-central-1",
-    "source_ami_filter": {
-      "filters": {
-      "virtualization-type": "hvm",
-      "name": "*debian-jessie*",
-      "root-device-type": "ebs"
-      },
-      "owners": ["379101102735"],
-      "most_recent": true
-    },
-    "instance_type": "t2.nano",
-    "ssh_username": "admin",
-    "ami_name": "packer-consul {{timestamp}}",
-    "tags":
+  "builders": [
     {
-      "consul": "server"
+      "type": "amazon-ebs",
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "region": "eu-central-1",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "*debian-jessie*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "379101102735"
+        ],
+        "most_recent": true
+      },
+      "instance_type": "t2.nano",
+      "ssh_username": "admin",
+      "ami_name": "packer-consul {{timestamp}}",
+      "tags": {
+        "consul": "server"
+      },
+      "run_tags": {
+        "consul": "server"
+      }
     }
-    ,
-    "run_tags": {
-      "consul": "server"
-    }
-  }],
+  ],
   "provisioners": [
     {
       "type": "ansible",
       "playbook_file": "./consul.yml",
-      "groups": ["consul","bramble"]
+      "groups": [
+        "consul",
+        "bramble"
+      ]
     }
   ]
 }

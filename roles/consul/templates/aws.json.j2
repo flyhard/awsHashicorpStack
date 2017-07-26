@@ -1,0 +1,8 @@
+{
+{% if consul_use_ec2 %}
+  "retry_join_ec2": {
+    "tag_key": "{{consul_ec2_tag_key}}",
+    "tag_value": "{{consul_ec2_tag_value}}"
+  }
+{% endif %}
+}

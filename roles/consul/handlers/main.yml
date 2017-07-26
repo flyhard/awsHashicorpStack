@@ -1,4 +1,0 @@
----
-
-- name: restart consul
-  include: restart.yml

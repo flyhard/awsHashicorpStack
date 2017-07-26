@@ -44,3 +44,7 @@ consul_ui_enabled: no
 consul_arch: arm
 
 consul_temp_dir: /tmp
+
+consul_use_ec2: yes
+consul_ec2_tag_key: consul
+consul_ec2_tag_value: server
