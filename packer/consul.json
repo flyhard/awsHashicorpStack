@@ -23,15 +23,16 @@
       "instance_type": "t2.nano",
       "ssh_username": "admin",
       "ami_name": "packer-consul {{timestamp}}",
-      "tags": {
-        "consul": "server"
-      },
       "run_tags": {
         "consul": "server"
       }
     }
   ],
   "provisioners": [
+    {
+      "type": "shell",
+      "inline": [ "echo SSH OK"]
+    },
     {
       "type": "ansible",
       "playbook_file": "./consul.yml",
