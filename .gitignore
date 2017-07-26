@@ -1,1 +1,14 @@
 # Created by .ignore support plugin (hsz.mobi)
+### Terraform template
+# Compiled files
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Module directory
+.terraform/
+
+.idea/
+cachedir/
+*.retry
+inventory.ini
