@@ -31,7 +31,10 @@
   "provisioners": [
     {
       "type": "shell",
-      "inline": [ "echo SSH OK"]
+      "inline": [ "echo SSH OK",
+        "sudo apt-get update",
+        "sudo apt-get dist-upgrade -y"
+      ]
     },
     {
       "type": "ansible",
