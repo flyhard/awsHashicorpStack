@@ -3,7 +3,7 @@ variable "secret_key" {}
 variable "region" {
   default = "eu-central-1"
 }
-
+variable "pub_key" {}
 variable "namespace" {
   description = <<EOH
 The namespace to create the virtual training lab. This should describe the
