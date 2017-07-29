@@ -1,6 +1,6 @@
 #!/usr/bin/env ansible-playbook -i inventory.ini --skip-tags=bootstrap,vault
 ---
-- hosts: bramble
+- hosts: all
   gather_facts: true
   become: yes
   become_user: root
@@ -10,7 +10,6 @@
     - ssh-key
     - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
   tags:
-    - bramble
     - bootstrap
 
 - name: setup the consul servers
