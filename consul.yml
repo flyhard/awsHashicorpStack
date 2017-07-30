@@ -8,7 +8,7 @@
     - utils
     - shell
     - ssh-key
-    - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
+#    - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
   tags:
     - bootstrap
 
@@ -16,7 +16,7 @@
   hosts: consul
   gather_facts: true
   roles:
-    - { role: consul, consul_is_server: yes, consul_dc: alpha, consul_bootstrap_expect: "{{ groups['consul'] | length }}", consul_ui_enabled: yes }
+    - { role: consul, consul_is_server: yes, consul_dc: alpha, consul_ui_enabled: yes }
   tags:
     - consul
     - consul-servers

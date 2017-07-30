@@ -34,8 +34,10 @@ resource "aws_instance" "consul-server" {
   instance_type = "t2.nano"
   iam_instance_profile = "${aws_iam_instance_profile.consul-join.name}"
   count = 3
+  key_name = "${aws_key_pair.deployer.key_name}"
   vpc_security_group_ids = [
-    "${aws_security_group.ssh.id}"]
+    "${aws_security_group.ssh.id}",
+  ]
   tags {
     Name = "consul-server"
     consul = "server"
@@ -45,9 +47,9 @@ resource "aws_instance" "consul-server" {
 # Create the policy
 data "aws_iam_policy_document" "consul-join-policy" {
   statement {
-    sid       = 1
+    sid = 1
 
-    actions   = [
+    actions = [
       "ec2:DescribeInstances",
     ]
 
@@ -99,19 +101,6 @@ resource "aws_iam_instance_profile" "consul-join" {
   role = "${aws_iam_role.consul-join.name}"
 }
 
-resource "aws_security_group" "ssh" {
-  egress {
-    from_port = 0
-    protocol = "tcp"
-    to_port = 65535
-    cidr_blocks = [
-      "0.0.0.0/0"]
-  }
-  ingress {
-    from_port = 22
-    protocol = "tcp"
-    to_port = 22
-    cidr_blocks = [
-      "0.0.0.0/0"]
-  }
+output "ip" {
+  value = "${join(",", aws_instance.consul-server.*.public_ip)}"
 }
