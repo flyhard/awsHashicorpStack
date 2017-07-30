@@ -6,8 +6,9 @@ addn-hosts=/etc/hosts
 # Never forward addresses in the non-routed address spaces.
 bogus-priv
 
-server=8.8.8.8
-server=8.8.4.4
+{% for ns in ansible_dns.nameservers %}
+server={{ ns }}
+{% endfor %}
 
 # configure DNS resolution to consul servers
 server=/{{ consul_dns_domain }}/127.0.0.1#8600

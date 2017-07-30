@@ -12,3 +12,4 @@
 cachedir/
 *.retry
 inventory.ini
+*.log

@@ -8,7 +8,6 @@
     - utils
     - shell
     - ssh-key
-#    - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
   tags:
     - bootstrap
 
@@ -20,3 +19,9 @@
   tags:
     - consul
     - consul-servers
+
+- name: setup DNSmasq
+  hosts: all
+  become: yes
+  roles:
+  - { role: dnsmasq, consul_dns_domain: bramble.local, consul_dc: alpha }
