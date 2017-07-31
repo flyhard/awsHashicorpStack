@@ -1,5 +1,5 @@
 ---
-nomad_version: "{{ lookup('env','NOMAD_VERSION') | default('0.5.6', true) }}"
+nomad_version: "{{ lookup('env','NOMAD_VERSION') | default('0.6.0', true) }}"
 nomad_architecture_map:
   # this first entry seems... redundant
   #(but it's required for reasons)
