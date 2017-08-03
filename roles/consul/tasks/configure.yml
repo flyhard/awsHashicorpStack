@@ -19,7 +19,10 @@
   #     - restart consul
   #   tags:
   #     - consul
-
+  - name: Register consul domain as fact
+    set_fact:
+      dc: "{{ consul_dc }}"
+      domain: "{{ consul_dns_domain }}"
   - name: install consul scripts
     copy:
       src: "{{ item.src }}"
@@ -44,7 +47,7 @@
     systemd:
       daemon_reload: yes
       name: consul.service
-      state: restarted
+      state: stopped
     tags:
       - consul
 

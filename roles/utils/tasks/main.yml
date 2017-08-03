@@ -15,7 +15,7 @@
 
 - name: Install tools
   apt:
-    name: htop,dnsutils,telnet,vim,unzip,ca-certificates
+    name: htop,dnsutils,telnet,vim,unzip,ca-certificates,curl,jq
     update_cache: yes
   tags:
     - utils

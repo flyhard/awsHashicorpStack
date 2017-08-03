@@ -57,6 +57,12 @@
   tags:
     - installation
     - nomad
+- name: Create required directories
+  file:
+    path: /etc/nomad
+    state: directory
+    mode: 0755
+  become: yes
 
 #######################################################
 #############  CONFIG   ###############################
@@ -88,15 +94,18 @@
     systemd:
       daemon_reload: yes
       name: nomad.service
-      state: restarted
+      state: stopped
     tags:
       - nomad
   - name: enable nomad
     service:
       name: nomad
       enabled: yes
-      state: started
+      state: stopped
     tags:
       - nomad
   become: true
   become_user: root
+
+- name: install nomad autocomplete
+  command: nomad -autocomplete-install

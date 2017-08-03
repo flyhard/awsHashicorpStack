@@ -17,8 +17,7 @@ nomad_owner: root
 nomad_group: root
 nomad_dc: dc1
 nomad_is_server: no
-nomad_leader_group: baron
-nomad_bootstrap_expect: "{{ groups[nomad_leader_group] | length }}"
-nomad_retry_join: ' [{% for host in groups[nomad_leader_group] %}"{{ host }}"{% if not loop.last %}, {% endif %}{% endfor %}]'
+nomad_leader_group: consul
+nomad_bootstrap_expect: 3
 
 nomad_enable_syslog: yes

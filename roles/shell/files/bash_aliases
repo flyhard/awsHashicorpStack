@@ -2,3 +2,5 @@
 
 alias ll="ls -lahG --color=auto"
 alias la="ls -a --color=auto"
+alias service="sudo service"
+alias log-consul="grep \"consul\\[\"

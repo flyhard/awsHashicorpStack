@@ -14,7 +14,7 @@
     systemd:
       daemon_reload: yes
       name: vault.service
-      state: restarted
+      state: stopped
     tags:
       - vault
   - name: configure vault
@@ -22,7 +22,6 @@
       src: vault.config
       dest: /etc/vault.config
       mode: 600
-    notify: restart vault
     tags:
       - vault
 
@@ -38,7 +37,7 @@
     service:
       name: vault
       enabled: yes
-      state: started
+      state: stopped
     tags:
       - vault
 

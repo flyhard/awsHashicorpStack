@@ -4,3 +4,5 @@ consul:
   do_ssl: no
   do_acl: no
   do_auth: no
+
+dc_name: "{{ ansible_dns.domain | regex_replace('\\.compute\\.internal')}}"

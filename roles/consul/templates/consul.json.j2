@@ -7,7 +7,6 @@
 {% endif %}
   "rejoin_after_leave": false,
   "domain": "{{ consul_dns_domain }}",
-  "client_addr": "0.0.0.0",
   "recursors" : [
     {{ '\"' + ansible_dns.nameservers|join('\", \"' + '\"' ) + '\"'}}
    ],
